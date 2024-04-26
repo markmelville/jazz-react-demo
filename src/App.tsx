@@ -1,32 +1,35 @@
-import { useJazz, useAutoSub } from 'jazz-react'
-import { CoMap } from 'cojson';
+import { ID, CoMap, co } from "jazz-tools";
+import { useAccount, useCoState } from './main.tsx';
 import './App.css'
 
+export class SystemSummary extends CoMap<SystemSummary> {
+  prop1 = co.string;
+  prop2 = co.string;
+}
+
 function App() {
-  const { me, logOut } = useJazz()
-  console.log(me)
+  const { me, logOut } = useAccount();
 
   return (
     <>
       <h1>All That Jazz</h1>
       <button onClick={logOut}>Log Out</button>
-
-      <DocViewer docId={"co_z7qjZ8cmqH6womwRe24H8CJzisC" as CoMap["id"]} />
+      <DocViewer docId={"co_zTkmq9s27mxqrKbSEKU8sgSqczr" as ID<SystemSummary>} />
+      {/* sealer_ key_ */}
     </>
   )
 }
 
 export default App
 
-export function DocViewer(props: { docId: CoMap['id'] }) {
-  const root = useAutoSub(props.docId);
-  console.log(root)
+export function DocViewer(props: { docId: ID<SystemSummary> }) {
+  const summary = useCoState(SystemSummary, props.docId);
  
-  return root ? <div>
+  return summary ? <div>
     {
-      Object.entries(root).map(([id,msg]) => (
+      Object.entries(summary).map(([id,msg]) => (
         <p key={id}>
-            {id} {msg?.toString()}
+            {id}: {String(msg)}
         </p>
       ))
     }
